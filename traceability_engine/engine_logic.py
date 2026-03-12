@@ -88,7 +88,7 @@ def run_engine():
                 diff = list(difflib.unified_diff(
                     func.get('old_code', "").splitlines(), 
                     func['code'].splitlines(), 
-                    n=1, linterm=''
+                    n=1, lineterm=''
                 ))
                 for line in diff[2:]:
                     if line.startswith('+'): print(f"\033[92m{line}\033[0m", file=sys.stderr)
