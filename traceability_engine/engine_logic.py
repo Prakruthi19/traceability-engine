@@ -7,6 +7,38 @@ import sys
 from .parser import compare_logic
 from .translator import translate_to_methods
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+def remove_entry_from_file(filename, func_name):
+    if not os.path.exists(filename):
+        print(f"{filename} does not exist. Skipping cleanup.", file=sys.stderr)
+        return
+    
+    with open(filename, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    
+    # Target string to look for
+    target = f"* **{func_name}**:"
+    
+    # Filter lines and track if we found any matches
+    new_lines = []
+    found = False
+    
+    for line in lines:
+        if line.strip().startswith(target):
+            found = True
+            # We skip adding this line to new_lines, effectively removing it
+            continue
+        new_lines.append(line)
+    
+    # Handle the outcome
+    if found:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.writelines(new_lines)
+        print(f"Cleaned {func_name} from {filename}", file=sys.stderr)
+    else:
+        print(f"{func_name} was not found in {filename}. Nothing to remove.", file=sys.stderr)
+
+
 def run_engine():
     """
     Main orchestrator for the traceability engine.
@@ -47,7 +79,15 @@ def run_engine():
                     # Store function data + file path for the audit trail
                     for func in compare_logic(old_content, new_content):
                         func['path'] = file_path
-                        tasks.append(func)
+                        if func.get('status') == 'deleted':
+                            # HANDLE DELETIONS HERE
+                            print(f"\n\033[91m[REMOVED] {func['name']} in {file_path}\033[0m", file=sys.stderr)
+                            print(f"Remove from METHODS.md? [y/n]: ", end='', file=sys.stderr, flush=True)
+                            with open('CON', 'r') as console:
+                                if console.readline().strip().lower() == 'y':
+                                    remove_entry_from_file("METHODS.md", func['name'])
+                        else:
+                            tasks.append(func)
         
         print(f"Processing {len(tasks)} functions in parallel...", file=sys.stderr)
         results_map = {}
@@ -118,6 +158,8 @@ def run_engine():
 
     except Exception as e:
         print(f"Traceability Engine Error: {e}", file=sys.stderr)
+
+
 
 if __name__ == "__main__":
     run_engine()
