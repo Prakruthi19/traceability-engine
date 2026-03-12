@@ -1,22 +1,40 @@
-# 🚀 AI Traceability Engine
+# 📚 AI Traceability Engine: Master Implementation Guide
 
-An automated, AI-powered documentation tool that lives in your Git workflow. It identifies functional logic changes using **AST (Abstract Syntax Tree)** parsing and generates formal method descriptions using **Llama 3.3 70B**.
-
-
-
-## ✨ Key Features
-* **AST-Based Detection:** Unlike standard diff tools that trigger on every line change, this engine parses Python code to detect actual logic modifications, ignoring simple formatting or whitespace changes.
-* **High-Fidelity AI Documentation:** Leverages **Llama 3.3 70B** via the Hugging Face Router for near-instant, academic-grade method descriptions.
-* **Human-in-the-Loop:** Interactive CLI allows you to **Accept**, **Edit**, or **Skip** suggestions before they are written to disk.
-* **Automatic Segregation:** Organizes your documentation by file within `METHODS.md` to ensure a clean, navigable audit trail.
+This document contains the complete technical specifications, source code, and deployment steps for the **AI Traceability Engine**.
 
 ---
 
-## 🛠️ Installation
+## 📂 1. Project Directory Structure
+Ensure your folder is organized exactly as follows for the package installation to work:
 
-### 1. Install Globally (Local Development)
-Clone the repository and install it in editable mode:
-```powershell
-git clone https://github.com/Prakruthi19/traceability-engine
-cd traceability-engine
+```text
+traceability-engine/
+├── .gitignore               # CRITICAL: Exclude .env and build artifacts
+├── pyproject.toml           # Package configuration & CLI entry points
+├── README.md                # Project overview for GitHub
+├── .env                     # Local secrets (API Keys)
+└── traceability_engine/     # Source code package
+    ├── __init__.py          # Identifies folder as a Python package
+    ├── main.py              # CLI entry point & toggle logic
+    ├── engine_logic.py      # Git orchestration & user loop
+    ├── parser.py            # AST logic for logic-only diffs
+    └── translator.py        # Llama 3.3 70B API integration
+```
+## Installation & Setup Guide
+Step 1: Local Installation
+Run this in the root folder to register the trace-gen command:
+```bash
 pip install -e .
+```
+## Step 2: Configure Environment
+Create a .env file (this will be ignored by Git):
+```bash
+HUGGINGFACE_API_KEY=your_hf_token_here
+TRACE_GEN_ENABLED=true
+```
+## Step 3: Activate Git Hook
+Create a file at .git/hooks/pre-commit and paste:
+```bash
+#!/bin/sh
+trace-gen run
+```
