@@ -43,7 +43,6 @@ def translate_to_methods(func_name, code_snippet):
     if not client:
         return "Error: HUGGINGFACE_API_KEY not set."
 
-    print(f"Calling Llama for '{func_name}' description...", file=sys.stderr)
 
     try:
         completion = client.chat.completions.create(
