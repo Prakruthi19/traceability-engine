@@ -17,6 +17,6 @@ An automated, AI-powered documentation tool that lives in your Git workflow. It 
 ### 1. Install Globally (Local Development)
 Clone the repository and install it in editable mode:
 ```powershell
-git clone https://github.com/your-username/traceability-engine.git
+git clone https://github.com/Prakruthi19/traceability-engine
 cd traceability-engine
 pip install -e .
